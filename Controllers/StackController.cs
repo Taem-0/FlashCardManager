@@ -1,4 +1,5 @@
-﻿using FlashCardManager.DTO_s;
+﻿using System.Collections;
+using FlashCardManager.DTO_s;
 using FlashCardManager.FlashCardDB;
 using FlashCardManager.Helpers;
 using FlashCardManager.Models;
@@ -9,62 +10,74 @@ namespace FlashCardManager.Controllers
     internal class StackController
     {
 
-        internal static void ProcessAdd()
+        internal static void ProcessAdd(String stackName)
         {
-            Methods.TitleCard();
 
-            Console.WriteLine("Enter stack name or 0 to cancel: ");
-
-            String stackName = Console.ReadLine();
-
-            if (stackName != "0")
+            if (string.IsNullOrWhiteSpace(stackName) || stackName == "0")
             {
-                Stacks stacks = new();
-
-                stacks.name = stackName;
-                    
-                DBmanager.PostStack(stacks);
-
+                Console.WriteLine("Cancelled.");
+                Console.ReadLine();
                 return;
             }
 
+            Stacks stacks = new();
 
-            Console.WriteLine("Cancelled.");
-            Console.ReadLine();
-            
+            stacks.name = stackName;
+
+            DBmanager.PostStack(stacks);
 
         }
 
-        internal static void ProcessGet()
+        //For actually doing something with the DB since we need the id of the selected stack. This will not be used to display whatsoever.
+        internal static Stacks ProcessGetStack(String stackName)
+        {
+
+            Stacks stacks = null!;
+
+            var Stack = DBmanager.GetStack();
+
+            foreach (var item in Stack)
+            {
+                if (stackName.Equals(item.name))
+                {
+                    stacks = new Stacks();
+                    stacks.id = item.id;
+                    stacks.name = item.name;
+                    stacks.size = item.size;
+                    break;
+                }
+            }
+
+            return stacks;
+
+        }
+
+        
+
+        //For users interface basically, just takes the DTO
+        internal static List<StackDTO> ProcessGetStackDTO()
         {
             List<StackDTO> tableDisplay = new();
 
             var Stack = DBmanager.GetStack();
 
-            if(Stack.Count > 0)
+
+            foreach (var item in Stack)
             {
-                foreach (var item in Stack)
+
+                StackDTO stack = new StackDTO
                 {
+                    nameDTO = item.name?.ToString(),
+                    sizeDTO = item.size?.ToString() ?? "N/A",
+                };
 
-                    StackDTO stack = new StackDTO
-                    {
-                        nameDTO = item.name.ToString(),
-                        sizeDTO = Stack.Count > 1 ? item.size.ToString() : "N/A",
-                    };
-
-                    tableDisplay.Add(stack);
-
-                }
-
-                TableVisualizer.stackTable(tableDisplay);
+                tableDisplay.Add(stack);
 
             }
-            else
-            {
-                Console.WriteLine("No records found... :'(");
-            }
-
+            return tableDisplay;
         }
+
+
 
     }
 }

@@ -1,7 +1,6 @@
 ﻿
 using FlashCardManager.Models;
 using MySql.Data.MySqlClient;
-using MySqlX.XDevAPI.Relational;
 
 namespace FlashCardManager.FlashCardDB
 {
@@ -91,11 +90,6 @@ namespace FlashCardManager.FlashCardDB
                 }
             }
         }
-
-
-
-
-
 
 
         #endregion
