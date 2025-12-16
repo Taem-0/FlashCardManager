@@ -1,46 +1,36 @@
 ﻿
+using FlashCardManager.Controllers;
+using FlashCardManager.SpectreConsole;
+using MySql.Data.MySqlClient;
+
 namespace FlashCardManager.Helpers
 {
     internal class Methods
     {
 
-        internal static void SpecificClear(int startLine, int lineCount)
+        internal static void CheckStacks()
         {
+            var stackList = StackController.ProcessGetStackDTO();
 
-            Console.SetCursorPosition(0, startLine);
-
-            for (int i = 0; i < lineCount; i++)
+            if (stackList.Count > 0)
             {
-                Console.WriteLine(new string(' ', Console.WindowWidth));
+                TableVisualizer.stackTable(stackList);
             }
-
-            Console.SetCursorPosition(0, startLine);
-
+            else
+            {
+                Console.WriteLine("No records found :<");
+            }
         }
 
-        internal static void TitleCard()
+
+        internal static MySqlConnection CreateConnection(string connectionString)
         {
-            Console.Clear();
 
-            Console.WriteLine(@"
- ________ ___       ________  ________  ___  ___  ________  ________  ________  ________
-|\  _____\\  \     |\   __  \|\   ____\|\  \|\  \|\   ____\|\   __  \|\   __  \|\   ___ \
-\ \  \__/\ \  \    \ \  \|\  \ \  \___|\ \  \\\  \ \  \___|\ \  \|\  \ \  \|\  \ \  \_|\ \
- \ \   __\\ \  \    \ \   __  \ \_____  \ \   __  \ \  \    \ \   __  \ \   _  _\ \  \ \\ \
-  \ \  \_| \ \  \____\ \  \ \  \|____|\  \ \  \ \  \ \  \____\ \  \ \  \ \  \\  \\ \  \_\\ \
-   \ \__\   \ \_______\ \__\ \__\____\_\  \ \__\ \__\ \_______\ \__\ \__\ \__\\ _\\ \_______\
-    \|__|    \|_______|\|__|\|__|\_________\|__|\|__|\|_______|\|__|\|__|\|__|\|__|\|_______|
-                                \|_________|
- _____ ______   ________  ________   ________  ________  _______   ________                  
-|\   _ \  _   \|\   __  \|\   ___  \|\   __  \|\   ____\|\  ___ \ |\   __  \
-\ \  \\\__\ \  \ \  \|\  \ \  \\ \  \ \  \|\  \ \  \___|\ \   __/|\ \  \|\  \
- \ \  \\|__| \  \ \   __  \ \  \\ \  \ \   __  \ \  \  __\ \  \_|/_\ \   _  _\
-  \ \  \    \ \  \ \  \ \  \ \  \\ \  \ \  \ \  \ \  \|\  \ \  \_|\ \ \  \\  \|
-   \ \__\    \ \__\ \__\ \__\ \__\\ \__\ \__\ \__\ \_______\ \_______\ \__\\ _\         
-    \|__|     \|__|\|__|\|__|\|__| \|__|\|__|\|__|\|_______|\|_______|\|__|\|__|
-                ");
+            var connection = new MySqlConnection(connectionString);
 
-            Console.WriteLine("==================================================================================================\n");
+            connection.Open();
+
+            return connection;
 
         }
 
