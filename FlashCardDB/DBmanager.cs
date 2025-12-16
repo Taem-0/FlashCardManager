@@ -1,4 +1,5 @@
 ﻿
+using FlashCardManager.Helpers;
 using FlashCardManager.Models;
 using MySql.Data.MySqlClient;
 
@@ -13,12 +14,10 @@ namespace FlashCardManager.FlashCardDB
         internal static void PostStack(Stacks stacks)
         {
 
-            using (var connection = new MySqlConnection(connectionString_DataBase))
+            using (var connection = Methods.CreateConnection(connectionString_DataBase))
+            using (var command = connection.CreateCommand())
             {
-
-                connection.Open();
-
-                using (var command = connection.CreateCommand())
+                try
                 {
 
                     command.CommandText = @"INSERT INTO stacks (Name)
@@ -26,72 +25,113 @@ namespace FlashCardManager.FlashCardDB
 
                     command.Parameters.AddWithValue("@name", stacks.name);
 
-                    try
-                    {
-                        int rowsAffected = command.ExecuteNonQuery();
-
-                        if (rowsAffected > 0)
-                        {
-                            Console.WriteLine("Successfully created stack.");
-                            Console.ReadLine();
-                        }
-                        else
-                        {
-                            Console.WriteLine("No rows affected.");
-                            Console.ReadLine();
-                        }
-                    }
-                    catch (MySqlException ex)
-                    {
-                        Console.WriteLine($"Error: {ex.Message}");
-                    }
                     
+                    int rowsAffected = command.ExecuteNonQuery();
+
+
+                    if (rowsAffected > 0)
+                    {
+                        Console.WriteLine("Successfully created stack.");
+                        Console.ReadLine();
+                    }
+                    else
+                    {
+                        Console.WriteLine("No rows affected.");
+                        Console.ReadLine();
+                    }
+
                 }
-
+                catch (MySqlException ex)
+                {
+                    Console.WriteLine($"Error: {ex.Message}");
+                }
             }
+        }
 
+
+        internal static void DeleteStack(int id)
+        {
+
+            using (var connection = Methods.CreateConnection(connectionString_DataBase))
+            using (var command = connection.CreateCommand())
+            {
+
+                try
+                {
+
+                    command.CommandText = @"DELETE FROM stacks WHERE Stack_ID = @id";
+
+                    command.Parameters.AddWithValue("@id", id);
+
+                    command.ExecuteNonQuery();  
+
+                }catch (MySqlException ex)
+                {
+                    Console.WriteLine($"Error: {ex.Message}");
+                }
+            }
         }
 
         internal static List<Stacks> GetStack()
         {
+            List<Stacks> tableData = new();
 
-            using (var connection = new MySqlConnection(connectionString_DataBase))
+            using (var connection = Methods.CreateConnection(connectionString_DataBase))
+            using(var command = connection.CreateCommand())
             {
-             
-                List<Stacks> tableData = new();
-                
-                using(var command = connection.CreateCommand())
+                try
                 {
-
-                    connection.Open();
 
                     command.CommandText = @"SELECT * FROM stacks;";
 
-                    using(var reader = command.ExecuteReader())
+                    using (var reader = command.ExecuteReader())
                     {
 
-                        if (reader.HasRows)
-                        {
+                        if (!reader.HasRows)
+                            return tableData;
 
-                            while (reader.Read())
-                            {
-                                tableData.Add(new Stacks
-                                {
-                                    id = reader.GetInt32(0),
-                                    name = reader.GetString(1),
-                                    size = reader.GetInt32(2)
-                                });
-                            }
+                        ReadStacks(reader, tableData);
 
-                        }
-
-                        return tableData;
                     }
+
                 }
+                catch (MySqlException ex)
+                {
+                    Console.WriteLine($"Error: {ex.Message}");
+                }
+
+                
             }
+
+            return tableData;
+
+        }
+
+        
+        private static void ReadStacks(MySqlDataReader reader, List<Stacks> tableData)
+        {
+
+            while (reader.Read())
+            {
+                tableData.Add(new Stacks
+                {
+                    id = reader.GetInt32(0),
+                    name = reader.GetString(1),
+                    size = reader.IsDBNull(2) ? (int?)null : reader.GetInt32(2)
+                });
+            }
+
         }
 
 
+
         #endregion
+
+
+
+
+
+
+
     }
 }

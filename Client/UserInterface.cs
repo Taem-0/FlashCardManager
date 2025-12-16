@@ -1,6 +1,5 @@
 ﻿
 using FlashCardManager.Controllers;
-using FlashCardManager.DTO_s;
 using FlashCardManager.Helpers;
 using FlashCardManager.Models;
 using FlashCardManager.SpectreConsole;
@@ -10,167 +9,270 @@ namespace FlashCardManager.Client
     internal class UserInterface
     {
 
-        StackController stackController = new();
-
         internal void MainMenu()
         {
             bool closeApp = false;
 
-            while(closeApp == false)
+            while(!closeApp)
             {
 
-                Methods.TitleCard();
+                DisplayMenu();
 
-                Console.WriteLine("0: exit");
-                Console.WriteLine("1: manage stacks");
-                Console.WriteLine("2: manage flashcards");
-                Console.WriteLine("3: study");
-                Console.WriteLine("4: view study session data");
+                String? userCommand = Console.ReadLine()?.Trim() ?? "";
 
-                String? userCommand = Console.ReadLine()?.Trim();
-
-                switch(userCommand)
-                {
-                    case "0":
-                        closeApp = true;
-                        break;
-                    case "1":
-                        StackSelectionMenu();
-                        break;
-                    case "2":
-                        Console.WriteLine("UNDER CONSTRUCTION");
-                        Console.ReadLine();
-                        break;
-                    case "3":
-                        Console.WriteLine("UNDER CONSTRUCTION");
-                        Console.ReadLine();
-                        break;
-                    case "4":
-                        Console.WriteLine("UNDER CONSTRUCTION");
-                        Console.ReadLine();
-                        break;
-                    default:
-                        Console.WriteLine("Invalid.");
-                        Console.ReadLine();
-                        break;
-                }
+                closeApp = HandleMainMenuResponse(userCommand);
             }
         }
+
+
+        private void DisplayMenu()
+        {
+
+            DisplayMethods.TitleCard();
+
+            Console.WriteLine("0: exit");
+            Console.WriteLine("1: manage stacks");
+            Console.WriteLine("2: manage flashcards");
+            Console.WriteLine("3: study");
+            Console.WriteLine("4: view study session data");
+
+        }
+
+
+        private bool HandleMainMenuResponse(string userCommand)
+        {
+
+            switch (userCommand)
+            {
+                case "0":
+                    return true;
+                case "1":
+                    StackSelectionMenu();
+                    break;
+                case "2":
+                    Console.WriteLine("UNDER CONSTRUCTION");
+                    Console.ReadLine();
+                    break;
+                case "3":
+                    Console.WriteLine("UNDER CONSTRUCTION");
+                    Console.ReadLine();
+                    break;
+                case "4":
+                    Console.WriteLine("UNDER CONSTRUCTION");
+                    Console.ReadLine();
+                    break;
+                default:
+                    Console.WriteLine("Invalid.");
+                    Console.ReadLine();
+                    break;
+            }
+
+            return false;
+
+        }
+
+
+
+
+
 
         internal void StackSelectionMenu()
         {
 
-            Methods.TitleCard();
+            DisplayMethods.TitleCard();
 
             bool isInStackSelection = true;
 
-            while (isInStackSelection == true)
+            while (isInStackSelection)
             {
-                Methods.SpecificClear(19, 10);
 
-                var stackList = StackController.ProcessGetStackDTO();
+                DisplayStackSelection();
 
-                if (stackList.Count > 0)
+                String? userCommand = Console.ReadLine()?.Trim() ?? "";
+
+                isInStackSelection = HandleStackSelectionResponse(userCommand);
+
+                if (!isInStackSelection) break;
+
+                var stacks = StackController.ProcessGetStack(userCommand);
+
+                if (stacks == null)
                 {
-                    TableVisualizer.stackTable(stackList);
-                }
-                else
-                {
-                    Console.WriteLine("No records found :<");
-                }
 
-                Console.WriteLine("\n--------------------------------------------------");
-                Console.WriteLine("0: exit");
-                Console.WriteLine("1: create new stack");
-
-                String? userCommand = Console.ReadLine()?.Trim();
-
-                switch (userCommand)
-                {
-                    case "0":
-                        isInStackSelection = false;
-                        break;
-                    case "1":
-                        CreateStackMenu();
-                        break;
-                    default:
-                        
-                        var stacks = VerifyStackInput(userCommand!, stackList);
-
-                        if (stacks != null)
-                        {
-                            SelectedStackMenu(stacks);
-                        }
-
-                        break;
+                    DisplayMethods.TitleCard();
+                    Console.WriteLine("Invalid.");
+                    Console.ReadLine();
+                    continue;
+                    
                 }
 
-
+                SelectedStackMenu(stacks);
 
             }
         }
 
 
-        internal void CreateStackMenu()
+        private void DisplayStackSelection()
         {
-            Methods.TitleCard();
 
-            Console.WriteLine("Enter stack name or 0 to cancel: ");
+            DisplayMethods.SpecificClear(19, 10);
 
-            String stackName = Console.ReadLine()!.Trim();
+            Methods.CheckStacks();
 
-            StackController.ProcessAdd(stackName);
+            Console.WriteLine("\n--------------------------------------------------");
+            Console.WriteLine("0: exit");
+            Console.WriteLine("1: create new stack");
+
         }
+
+
+        private bool HandleStackSelectionResponse(string userCommand)
+        {
+
+            switch (userCommand)
+            {
+                case "0":
+                    return false;
+                case "1":
+                    CreateStackMenu();
+                    break;
+
+            }
+
+            return true;
+
+        }
+
+
+
+
 
 
         internal void SelectedStackMenu(Stacks stacks)
         {
-            Methods.TitleCard();
+            DisplayMethods.TitleCard();
 
             bool isInSelectedStack = true;
 
-            while (isInSelectedStack == true)
+            while (isInSelectedStack)
             {
-                Console.WriteLine($"Current working stack: {stacks.name} ");
-                Console.WriteLine("\n--------------------------------------------------");
-                Console.WriteLine("0: return to main menu");
+                
+                DisplaySelectedStack(stacks);
 
-                ConsoleKeyInfo userInput = Console.ReadKey();
+                String? userCommand = Console.ReadLine()?.Trim()!;
 
-                switch (userInput.Key)
-                {
-                    case ConsoleKey.D0:
-                        isInSelectedStack = false;
-                        break;
-                }
+                isInSelectedStack = HandleSelectedStackResponse(userCommand, stacks);
+
+                if (!isInSelectedStack) break;
+                
             }
-
-            
-
         }
-        
 
-        internal Stacks VerifyStackInput(string userInput, List<StackDTO> stackList)
+
+        private void DisplaySelectedStack(Stacks stacks)
+        {
+            Console.WriteLine($"Current working stack: {stacks.name} ");
+            Console.WriteLine("\n--------------------------------------------------");
+            Console.WriteLine("0: return to main menu");
+            Console.WriteLine("D: delete current stack");
+        }
+
+        private bool HandleSelectedStackResponse(string userCommand, Stacks stacks)
         {
 
-            foreach (var stack in stackList)
+            switch (userCommand)
             {
-                if (string.Equals(userInput, stack.nameDTO))
-                {
+                case "0":
+                    return false;
+                case "D":
+                    ConfirmDelete(stacks);
+                    return false;
+                    
+            }
 
-                    return StackController.ProcessGetStack(stack.nameDTO!);
+            return true;
+
+        }
 
 
-                }
+
+
+
+
+        internal void CreateStackMenu()
+        {
+
+            DisplayMethods.TitleCard();
+
+
+            string userCommand = UserInputMethods.PromptUserStackName();
+
+            if (string.IsNullOrEmpty(userCommand))
+            {
+                Console.WriteLine("Cancelled.");
+                Console.ReadLine();
+                return;
             }
 
 
-            Console.WriteLine("Invalid.");
+            HandleCreateStackResponse(userCommand);
+            
+        }
+
+
+        private void HandleCreateStackResponse(string stackName)
+        {
+
+            if (!StackController.ProcessAdd(stackName))
+            {
+                return;
+            }
+
+            Console.Write("Successfully created stack.");
             Console.ReadLine();
-            return null!;
 
         }
-        
+
+
+
+
+
+
+        internal void ConfirmDelete(Stacks currentStack)
+        {
+
+            DisplayMethods.TitleCard();
+
+            string userCommand = UserInputMethods.PromptUserConfirmation();
+
+            HandleUserDeleteResponse(userCommand, currentStack); 
+
+        }
+
+
+        internal void HandleUserDeleteResponse(string userCommand, Stacks currentStack)
+        {
+
+            if (userCommand.Equals("y"))
+            {
+                StackController.ProcessDeleteStack(currentStack);
+                Console.WriteLine("Stack deleted successfully");
+                Console.ReadLine();
+            }
+            else if (userCommand.Equals("n"))
+            {
+                Console.WriteLine("Cancelled successfully");
+                Console.ReadLine();
+            }
+            else
+            {
+                Console.WriteLine("Invalid");
+                Console.ReadLine();
+            }
+
+        }
+
+
 
     }
 }

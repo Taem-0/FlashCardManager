@@ -5,6 +5,8 @@ using Spectre.Console;
 
 namespace FlashCardManager.SpectreConsole
 {
+
+
     internal class TableVisualizer
     {
 
@@ -17,7 +19,7 @@ namespace FlashCardManager.SpectreConsole
 
             foreach(var entry in tableData)
             {
-                table.AddRow(entry.nameDTO, entry.sizeDTO);
+                table.AddRow(entry.nameDTO ?? string.Empty, entry.sizeDTO ?? "0");
             }
 
             table.ShowRowSeparators();
@@ -27,4 +29,17 @@ namespace FlashCardManager.SpectreConsole
         }
 
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
 }

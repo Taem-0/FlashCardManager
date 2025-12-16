@@ -1,4 +1,5 @@
 ﻿using MySql.Data.MySqlClient;
+using FlashCardManager.Helpers;
 
 public class DbInitializer
 {
@@ -9,10 +10,8 @@ public class DbInitializer
     public static void CreateDataBase(string connectionString)
 	{
 
-        using (var connection = new MySqlConnection(connectionString))
+        using (var connection = Methods.CreateConnection(connectionString))
         {
-            connection.Open();
-
             using (var cmd = connection.CreateCommand())
             {
                 cmd.CommandText = "CREATE DATABASE IF NOT EXISTS flashCardDB";
@@ -20,22 +19,19 @@ public class DbInitializer
             }
 
             connection.Close();
-
         }
 
-        using (var connection = new MySqlConnection(connectionString_DataBase))
+
+        using (var connection = Methods.CreateConnection(connectionString_DataBase))
         {
-            connection.Open();
-            
+
             using (var tableCmd = connection.CreateCommand()) 
             {
-
                 tableCmd.CommandText = @"CREATE TABLE IF NOT EXISTS stacks (
                                             Stack_ID INT AUTO_INCREMENT PRIMARY KEY,
                                             Name VARCHAR(255) NOT NULL UNIQUE,
                                             Size INT DEFAULT 0
                                             );"; 
-
                 tableCmd.ExecuteNonQuery();
 
                 tableCmd.CommandText = @"CREATE TABLE IF NOT EXISTS flashcards (
@@ -45,14 +41,18 @@ public class DbInitializer
                                             Stack_ID INT,
                                             FOREIGN KEY (Stack_ID) REFERENCES stacks(Stack_ID) ON DELETE CASCADE
                                             );";
-
                 tableCmd.ExecuteNonQuery();
-
-
-
             }
+
+            connection.Close();
 
         }
 
 	}
+
+
+
+
+
+
 }       
