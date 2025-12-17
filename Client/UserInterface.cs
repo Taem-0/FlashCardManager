@@ -21,7 +21,14 @@ namespace FlashCardManager.Client
                 String? userCommand = Console.ReadLine()?.Trim() ?? "";
 
                 closeApp = HandleMainMenuResponse(userCommand);
+
+                if (userCommand.Equals("x"))
+                {
+                    StackSelectionMenu();
+                }
             }
+
+            
         }
 
 
@@ -119,6 +126,8 @@ namespace FlashCardManager.Client
 
             Methods.CheckStacks();
 
+            Console.WriteLine("--------------------------------------------------\n");
+            Console.WriteLine("Input a current stack name or input the options below");
             Console.WriteLine("\n--------------------------------------------------");
             Console.WriteLine("0: exit");
             Console.WriteLine("1: create new stack");
@@ -135,68 +144,13 @@ namespace FlashCardManager.Client
                     return false;
                 case "1":
                     CreateStackMenu();
-                    break;
+                    return false; 
 
             }
 
             return true;
 
         }
-
-
-
-
-
-
-        internal void SelectedStackMenu(Stacks stacks)
-        {
-            DisplayMethods.TitleCard();
-
-            bool isInSelectedStack = true;
-
-            while (isInSelectedStack)
-            {
-                
-                DisplaySelectedStack(stacks);
-
-                String? userCommand = Console.ReadLine()?.Trim()!;
-
-                isInSelectedStack = HandleSelectedStackResponse(userCommand, stacks);
-
-                if (!isInSelectedStack) break;
-                
-            }
-        }
-
-
-        private void DisplaySelectedStack(Stacks stacks)
-        {
-            Console.WriteLine($"Current working stack: {stacks.name} ");
-            Console.WriteLine("\n--------------------------------------------------");
-            Console.WriteLine("0: return to main menu");
-            Console.WriteLine("D: delete current stack");
-        }
-
-        private bool HandleSelectedStackResponse(string userCommand, Stacks stacks)
-        {
-
-            switch (userCommand)
-            {
-                case "0":
-                    return false;
-                case "D":
-                    ConfirmDelete(stacks);
-                    return false;
-                    
-            }
-
-            return true;
-
-        }
-
-
-
-
 
 
         internal void CreateStackMenu()
@@ -216,7 +170,7 @@ namespace FlashCardManager.Client
 
 
             HandleCreateStackResponse(userCommand);
-            
+
         }
 
 
@@ -234,6 +188,62 @@ namespace FlashCardManager.Client
         }
 
 
+
+
+
+
+        internal void SelectedStackMenu(Stacks stacks)
+        {
+            DisplayMethods.TitleCard();
+
+            bool isInSelectedStack = true;
+
+            while (isInSelectedStack)
+            {
+                
+                DisplaySelectedStack(stacks);
+
+                String? userCommand = Console.ReadLine()?.Trim().ToLower()!;
+
+                isInSelectedStack = HandleSelectedStackResponse(userCommand, stacks);
+
+                if (!isInSelectedStack) break;
+                
+            }
+        }
+
+
+        private void DisplaySelectedStack(Stacks stacks)
+        {
+            DisplayMethods.TitleCard();
+
+            Console.WriteLine($"Current working stack: {stacks.name} ");
+            Console.WriteLine("\n--------------------------------------------------");
+            Console.WriteLine("0: return to main menu");
+            Console.WriteLine("X: change current stack");
+            Console.WriteLine("D: delete current stack");
+        }
+
+        private bool HandleSelectedStackResponse(string userCommand, Stacks stacks)
+        {
+
+            switch (userCommand)
+            {
+                case "0":
+                    return false;
+                case "x":
+                    return false;
+                case "d":
+                    ConfirmDelete(stacks);
+                    return true;
+                    
+            }
+
+            return true;
+
+        }
+
+        
 
 
 
