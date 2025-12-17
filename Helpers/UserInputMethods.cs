@@ -20,6 +20,7 @@ namespace FlashCardManager.Helpers
             Console.WriteLine("Enter stack name or 0 to cancel: ");
             String stackName = Console.ReadLine()!.Trim();
 
+            
             return stackName;
 
         }
