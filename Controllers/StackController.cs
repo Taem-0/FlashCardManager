@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Diagnostics;
 using FlashCardManager.DTO_s;
 using FlashCardManager.FlashCardDB;
 
@@ -28,14 +29,21 @@ namespace FlashCardManager.Controllers
 
         }
 
-
-        internal static void ProcessDeleteStack(Stacks currentStack)
+        internal static bool ProcessUpdate(string updateStackName, Stacks currentStack)
         {
 
-            int stackID = currentStack.id;
-            DBmanager.DeleteStack(stackID);
+            Stacks stacks = new();
+
+            stacks.id = currentStack.id;
+            stacks.name = updateStackName;
+            stacks.size = currentStack.size;    
+            
+            DBmanager.UpdateStack(stacks);
+
+            return true;
 
         }
+        
 
         //For actually doing something with the DB since we need the id of the selected stack. This will not be used to display whatsoever.
         internal static Stacks? ProcessGetStack(String stackName)
@@ -62,6 +70,31 @@ namespace FlashCardManager.Controllers
             return null;
 
         }
+
+
+        internal static Stacks? ProcessGetStackByID(int stackId)
+        {
+
+            var stack = DBmanager.GetStack();
+
+            foreach (var item in stack)
+            {
+                if (!item.id.Equals(stackId)) 
+                {
+                    continue;
+                }
+
+                return new Stacks
+                {
+                    id = item.id,
+                    name = item.name,
+                    size = item.size,
+                };
+            }
+
+            return null;
+
+        } 
 
 
         //For users interface basically, just takes the DTO
@@ -92,7 +125,13 @@ namespace FlashCardManager.Controllers
 
 
 
+        internal static void ProcessDeleteStack(Stacks currentStack)
+        {
 
+            int stackID = currentStack.id;
+            DBmanager.DeleteStack(stackID);
+
+        }
 
 
 

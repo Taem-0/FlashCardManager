@@ -49,28 +49,38 @@ namespace FlashCardManager.FlashCardDB
         }
 
 
-        internal static void DeleteStack(int id)
+
+        internal static void UpdateStack(Stacks stacks)
         {
 
             using (var connection = Methods.CreateConnection(connectionString_DataBase))
             using (var command = connection.CreateCommand())
             {
-
                 try
                 {
 
-                    command.CommandText = @"DELETE FROM stacks WHERE Stack_ID = @id";
+                    command.CommandText = @"UPDATE stacks
+                                                SET Name = @name, Size = @size
+                                                WHERE Stack_ID = @id";
 
-                    command.Parameters.AddWithValue("@id", id);
+                    command.Parameters.AddWithValue("@name", stacks.name);
+                    command.Parameters.AddWithValue("@size", stacks.size);
+                    command.Parameters.AddWithValue("@id", stacks.id);
 
-                    command.ExecuteNonQuery();  
+                    command.ExecuteNonQuery();
 
-                }catch (MySqlException ex)
+                }
+                catch (MySqlException ex)
                 {
                     Console.WriteLine($"Error: {ex.Message}");
                 }
+
             }
-        }
+
+
+
+        } 
+
 
         internal static List<Stacks> GetStack()
         {
@@ -124,6 +134,30 @@ namespace FlashCardManager.FlashCardDB
         }
 
 
+
+        internal static void DeleteStack(int id)
+        {
+
+            using (var connection = Methods.CreateConnection(connectionString_DataBase))
+            using (var command = connection.CreateCommand())
+            {
+
+                try
+                {
+
+                    command.CommandText = @"DELETE FROM stacks WHERE Stack_ID = @id";
+
+                    command.Parameters.AddWithValue("@id", id);
+
+                    command.ExecuteNonQuery();
+
+                }
+                catch (MySqlException ex)
+                {
+                    Console.WriteLine($"Error: {ex.Message}");
+                }
+            }
+        }
 
         #endregion
 

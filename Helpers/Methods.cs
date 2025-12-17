@@ -1,5 +1,6 @@
 ﻿
 using FlashCardManager.Controllers;
+using FlashCardManager.Models;
 using FlashCardManager.SpectreConsole;
 using MySql.Data.MySqlClient;
 
@@ -31,6 +32,15 @@ namespace FlashCardManager.Helpers
             connection.Open();
 
             return connection;
+
+        }
+
+        internal static Stacks? RefreshStack(int id)
+        {
+
+
+            return StackController.ProcessGetStackByID(id);
+
 
         }
 

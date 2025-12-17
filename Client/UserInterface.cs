@@ -1,8 +1,8 @@
 ﻿
+using System.Diagnostics;
 using FlashCardManager.Controllers;
 using FlashCardManager.Helpers;
 using FlashCardManager.Models;
-using FlashCardManager.SpectreConsole;
 
 namespace FlashCardManager.Client
 {
@@ -22,10 +22,6 @@ namespace FlashCardManager.Client
 
                 closeApp = HandleMainMenuResponse(userCommand);
 
-                if (userCommand.Equals("x"))
-                {
-                    StackSelectionMenu();
-                }
             }
 
             
@@ -67,6 +63,9 @@ namespace FlashCardManager.Client
                 case "4":
                     Console.WriteLine("UNDER CONSTRUCTION");
                     Console.ReadLine();
+                    break;
+                case "x":
+                    StackSelectionMenu();
                     break;
                 default:
                     Console.WriteLine("Invalid.");
@@ -153,6 +152,10 @@ namespace FlashCardManager.Client
         }
 
 
+
+
+
+
         internal void CreateStackMenu()
         {
 
@@ -192,58 +195,41 @@ namespace FlashCardManager.Client
 
 
 
-        internal void SelectedStackMenu(Stacks stacks)
+        internal void ConfirmUpdateStack(Stacks currentStack)
         {
             DisplayMethods.TitleCard();
 
-            bool isInSelectedStack = true;
+            string userCommand = UserInputMethods.PromptUserStackName();
 
-            while (isInSelectedStack)
-            {
-                
-                DisplaySelectedStack(stacks);
+            HandleUpdateStackResponse(userCommand, currentStack);
 
-                String? userCommand = Console.ReadLine()?.Trim().ToLower()!;
-
-                isInSelectedStack = HandleSelectedStackResponse(userCommand, stacks);
-
-                if (!isInSelectedStack) break;
-                
-            }
         }
 
 
-        private void DisplaySelectedStack(Stacks stacks)
-        {
-            DisplayMethods.TitleCard();
-
-            Console.WriteLine($"Current working stack: {stacks.name} ");
-            Console.WriteLine("\n--------------------------------------------------");
-            Console.WriteLine("0: return to main menu");
-            Console.WriteLine("X: change current stack");
-            Console.WriteLine("D: delete current stack");
-        }
-
-        private bool HandleSelectedStackResponse(string userCommand, Stacks stacks)
+        private void HandleUpdateStackResponse(string userCommand, Stacks currentStack)
         {
 
-            switch (userCommand)
+            if (string.IsNullOrEmpty(userCommand) || userCommand == "0")
             {
-                case "0":
-                    return false;
-                case "x":
-                    return false;
-                case "d":
-                    ConfirmDelete(stacks);
-                    return true;
-                    
+                Console.WriteLine("Cancelled.");
+                Console.ReadLine();
+                return;
             }
 
-            return true;
+            if (!StackController.ProcessUpdate(userCommand, currentStack))
+            {
+                Console.WriteLine("Cancelled");
+                return;
+            }
+
+
+            Console.Write("Successfully updated stack.");
+            Console.ReadLine();
+
 
         }
 
-        
+
 
 
 
@@ -282,6 +268,76 @@ namespace FlashCardManager.Client
 
         }
 
+
+
+
+
+
+        internal void SelectedStackMenu(Stacks stacks)
+        {
+            DisplayMethods.TitleCard();
+
+            
+            bool isInSelectedStack = true;
+
+            while (isInSelectedStack)
+            {
+
+                var refreshedStack = Methods.RefreshStack(stacks.id);
+                if (refreshedStack == null)
+                {
+                    Console.WriteLine("Error: Stack no longer exists.");
+                    Console.ReadLine();
+                    return;
+                }
+
+                DisplaySelectedStack(refreshedStack);
+
+                String? userCommand = Console.ReadLine()?.Trim().ToLower()!;
+
+                isInSelectedStack = HandleSelectedStackResponse(userCommand, refreshedStack);
+
+                if (!isInSelectedStack) break;
+
+            }
+        }
+
+
+        private void DisplaySelectedStack(Stacks stacks)
+        {
+            DisplayMethods.TitleCard();
+
+            Console.WriteLine($"Current working stack: {stacks.name} ");
+            Console.WriteLine("\n--------------------------------------------------");
+            Console.WriteLine("0: return to main menu");
+            Console.WriteLine("X: change current stack");
+            Console.WriteLine("E: edit current stack");
+            Console.WriteLine("D: delete current stack");
+
+        }
+
+
+        private bool HandleSelectedStackResponse(string userCommand, Stacks stacks)
+        {
+
+            switch (userCommand)
+            {
+                case "0":
+                    return false;
+                case "x":
+                    return false;
+                case "e":
+                    ConfirmUpdateStack(stacks);
+                    return true;
+                case "d":
+                    ConfirmDelete(stacks);
+                    return false;
+
+            }
+
+            return true;
+
+        }
 
 
     }
