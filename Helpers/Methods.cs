@@ -1,5 +1,6 @@
 ﻿
 using FlashCardManager.Controllers;
+using FlashCardManager.DTO_s;
 using FlashCardManager.Models;
 using FlashCardManager.SpectreConsole;
 using MySql.Data.MySqlClient;
@@ -9,7 +10,7 @@ namespace FlashCardManager.Helpers
     internal class Methods
     {
 
-        internal static void CheckStacks()
+        internal static List<StackDTO> CheckStacks()
         {
             var stackList = StackController.ProcessGetStackDTO();
 
@@ -21,6 +22,8 @@ namespace FlashCardManager.Helpers
             {
                 Console.WriteLine("No records found :<");
             }
+
+            return stackList;
         }
 
 

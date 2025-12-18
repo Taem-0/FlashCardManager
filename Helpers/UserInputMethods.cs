@@ -1,4 +1,6 @@
 ﻿
+using Spectre.Console;
+
 namespace FlashCardManager.Helpers
 {
     internal class UserInputMethods
@@ -7,9 +9,11 @@ namespace FlashCardManager.Helpers
         internal static string PromptUserConfirmation()
         {
 
-            Console.WriteLine("Are you sure you? (y/n)");
-
-            String userCommand = Console.ReadLine()?.Trim().ToLower() ?? "";
+            String userCommand = AnsiConsole.Prompt(
+                new TextPrompt<string>("Are you sure?")
+                .AddChoice("y")
+                .AddChoice("n")
+                );
 
             return userCommand;
 
@@ -17,14 +21,21 @@ namespace FlashCardManager.Helpers
 
         internal static string PromptUserStackName()
         {
-            Console.WriteLine("Enter stack name or 0 to cancel: ");
-            String stackName = Console.ReadLine()!.Trim();
+            var input = AnsiConsole.Prompt(
+                new TextPrompt<string>("Enter stack name or [grey]0 to cancel[/]:")
+                    .AllowEmpty()
+            ).Trim();
 
-            
-            return stackName;
-
+            return input == "0" ? string.Empty : input;
         }
 
+        internal static void Pause()
+        {
+            AnsiConsole.Prompt(
+                new TextPrompt<string>("Press enter to continue")
+                    .AllowEmpty()
+            );
+        }
 
 
     }
