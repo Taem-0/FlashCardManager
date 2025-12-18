@@ -1,8 +1,8 @@
 ﻿
-using System.Diagnostics;
 using FlashCardManager.Controllers;
 using FlashCardManager.Helpers;
 using FlashCardManager.Models;
+using Spectre.Console;
 
 namespace FlashCardManager.Client
 {
@@ -16,9 +16,7 @@ namespace FlashCardManager.Client
             while(!closeApp)
             {
 
-                DisplayMenu();
-
-                String? userCommand = Console.ReadLine()?.Trim() ?? "";
+                String userCommand = DisplayMenuAndInput();
 
                 closeApp = HandleMainMenuResponse(userCommand);
 
@@ -28,39 +26,49 @@ namespace FlashCardManager.Client
         }
 
 
-        private void DisplayMenu()
+        private string DisplayMenuAndInput()
         {
 
             DisplayMethods.TitleCard();
 
-            Console.WriteLine("0: exit");
-            Console.WriteLine("1: manage stacks");
-            Console.WriteLine("2: manage flashcards");
-            Console.WriteLine("3: study");
-            Console.WriteLine("4: view study session data");
+            List<string> menuChoices = [
+                "Exit",
+                "Manage Stacks",
+                "Manage Flashcards",
+                "Study",
+                "View study sessions"
+            ];
+
+            string choice = AnsiConsole.Prompt(
+                new SelectionPrompt<string>()
+                    .AddChoices(menuChoices)
+                );
+
+            return choice;
 
         }
 
+        
 
         private bool HandleMainMenuResponse(string userCommand)
         {
 
             switch (userCommand)
             {
-                case "0":
+                case "Exit":
                     return true;
-                case "1":
+                case "Manage Stacks":
                     StackSelectionMenu();
                     break;
-                case "2":
+                case "Manage Flashcards":
                     Console.WriteLine("UNDER CONSTRUCTION");
                     Console.ReadLine();
                     break;
-                case "3":
+                case "Study":
                     Console.WriteLine("UNDER CONSTRUCTION");
                     Console.ReadLine();
                     break;
-                case "4":
+                case "View study sessions":
                     Console.WriteLine("UNDER CONSTRUCTION");
                     Console.ReadLine();
                     break;
@@ -92,46 +100,46 @@ namespace FlashCardManager.Client
             while (isInStackSelection)
             {
 
-                DisplayStackSelection();
+                String? userCommand = DisplayStackSelectionAndInput();
 
-                String? userCommand = Console.ReadLine()?.Trim() ?? "";
+                if (string.IsNullOrEmpty(userCommand))
+                    continue;
 
                 isInStackSelection = HandleStackSelectionResponse(userCommand);
 
                 if (!isInStackSelection) break;
 
-                var stacks = StackController.ProcessGetStack(userCommand);
 
-                if (stacks == null)
-                {
-
-                    DisplayMethods.TitleCard();
-                    Console.WriteLine("Invalid.");
-                    Console.ReadLine();
-                    continue;
-                    
-                }
-
-                SelectedStackMenu(stacks);
+                
 
             }
         }
 
 
-        private void DisplayStackSelection()
+        private string DisplayStackSelectionAndInput()
         {
 
             DisplayMethods.SpecificClear(19, 10);
 
             Methods.CheckStacks();
+            AnsiConsole.MarkupLine("\n--------------------------------------------------");
 
-            Console.WriteLine("--------------------------------------------------\n");
-            Console.WriteLine("Input a current stack name or input the options below");
-            Console.WriteLine("\n--------------------------------------------------");
-            Console.WriteLine("0: exit");
-            Console.WriteLine("1: create new stack");
+
+            List<string> menuChoices = [
+                "Return",
+                "Create new stack",
+                "Select a stack"
+            ];
+
+            string choice = AnsiConsole.Prompt(
+                new SelectionPrompt<string>()
+                    .AddChoices(menuChoices)
+                );
+
+            return choice;
 
         }
+
 
 
         private bool HandleStackSelectionResponse(string userCommand)
@@ -139,11 +147,14 @@ namespace FlashCardManager.Client
 
             switch (userCommand)
             {
-                case "0":
+                case "Return":
                     return false;
-                case "1":
+                case "Create new stack":
                     CreateStackMenu();
-                    return false; 
+                    return true;
+                case "Select a stack":
+                    SelectStackMenu();
+                    return true;
 
             }
 
@@ -152,6 +163,50 @@ namespace FlashCardManager.Client
         }
 
 
+
+
+        internal void SelectStackMenu()
+        {
+
+            bool isInSelectionStack = true;
+
+            while (isInSelectionStack)
+            {
+
+                DisplayMethods.TitleCard();
+
+                var stacks = StackController.ProcessGetStack();
+
+
+                if (stacks.Count.Equals(0))
+                {
+
+                AnsiConsole.MarkupLine("[red]Invalid.[/]");
+                AnsiConsole.Prompt(
+                    new TextPrompt<string>("Press enter to continue").AllowEmpty()
+                );
+                return;
+
+                }
+
+
+                var selectedStack = AnsiConsole.Prompt(
+                new SelectionPrompt<Stacks>()
+                    .Title("Select a stack:")
+                    .PageSize(5)
+                    .AddChoices(stacks)
+                    .MoreChoicesText("Move down to reveal more")
+                    .UseConverter(stack => stack.name!)
+                );
+
+                bool continueSelection = SelectedStackMenu(selectedStack);
+                if (!continueSelection)
+                {
+                    isInSelectionStack = false;
+                }
+
+            }
+        }
 
 
 
@@ -166,8 +221,12 @@ namespace FlashCardManager.Client
 
             if (string.IsNullOrEmpty(userCommand))
             {
-                Console.WriteLine("Cancelled.");
-                Console.ReadLine();
+                AnsiConsole.MarkupLine("Cancelled");
+                AnsiConsole.Prompt(
+                    new TextPrompt<string>("Press enter to continue")
+                    .AllowEmpty()
+                );
+
                 return;
             }
 
@@ -185,8 +244,8 @@ namespace FlashCardManager.Client
                 return;
             }
 
-            Console.Write("Successfully created stack.");
-            Console.ReadLine();
+            AnsiConsole.MarkupLine("Successfully created stack");
+            AnsiConsole.Prompt(new TextPrompt<string>("Press enter to continue"));
 
         }
 
@@ -273,13 +332,13 @@ namespace FlashCardManager.Client
 
 
 
-        internal void SelectedStackMenu(Stacks stacks)
+        internal bool SelectedStackMenu(Stacks stacks)
         {
             DisplayMethods.TitleCard();
 
             
             bool isInSelectedStack = true;
-
+            string lastCommand = "";
             while (isInSelectedStack)
             {
 
@@ -288,33 +347,45 @@ namespace FlashCardManager.Client
                 {
                     Console.WriteLine("Error: Stack no longer exists.");
                     Console.ReadLine();
-                    return;
+                    return true;
                 }
 
-                DisplaySelectedStack(refreshedStack);
 
-                String? userCommand = Console.ReadLine()?.Trim().ToLower()!;
+                String? userCommand = DisplaySelectedStack(refreshedStack);
+                lastCommand = userCommand;
 
                 isInSelectedStack = HandleSelectedStackResponse(userCommand, refreshedStack);
 
                 if (!isInSelectedStack) break;
 
             }
+
+            return lastCommand == "x";
         }
 
 
-        private void DisplaySelectedStack(Stacks stacks)
+        private string DisplaySelectedStack(Stacks stacks)
         {
             DisplayMethods.TitleCard();
 
-            Console.WriteLine($"Current working stack: {stacks.name} ");
-            Console.WriteLine("\n--------------------------------------------------");
-            Console.WriteLine("0: return to main menu");
-            Console.WriteLine("X: change current stack");
-            Console.WriteLine("E: edit current stack");
-            Console.WriteLine("D: delete current stack");
+            List<string> menuChoices = [
+                "Return to main menu",
+                "Change current stack",
+                "Edit current stack",
+                "Delete current stack"
+            ];
+
+            AnsiConsole.MarkupLine($"Current working stack: {stacks.name} ");
+            AnsiConsole.MarkupLine("\n--------------------------------------------------");
+            string choice = AnsiConsole.Prompt(
+                new SelectionPrompt<string>()
+                    .AddChoices(menuChoices)
+                );
+
+            return choice;
 
         }
+
 
 
         private bool HandleSelectedStackResponse(string userCommand, Stacks stacks)
@@ -322,14 +393,14 @@ namespace FlashCardManager.Client
 
             switch (userCommand)
             {
-                case "0":
+                case "Return to main menu":
                     return false;
-                case "x":
-                    return false;
-                case "e":
+                case "Change current stack":
+                    return true;
+                case "Edit current stack":
                     ConfirmUpdateStack(stacks);
                     return true;
-                case "d":
+                case "Delete current stack":
                     ConfirmDelete(stacks);
                     return false;
 
@@ -338,7 +409,5 @@ namespace FlashCardManager.Client
             return true;
 
         }
-
-
     }
 }

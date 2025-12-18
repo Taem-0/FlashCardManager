@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Diagnostics;
+using System.Text;
 using FlashCardManager.DTO_s;
 using FlashCardManager.FlashCardDB;
 
@@ -46,28 +47,26 @@ namespace FlashCardManager.Controllers
         
 
         //For actually doing something with the DB since we need the id of the selected stack. This will not be used to display whatsoever.
-        internal static Stacks? ProcessGetStack(String stackName)
+        internal static List<Stacks> ProcessGetStack()
         {
+            
+            List<Stacks> allStacks = new List<Stacks>();
 
             var Stack = DBmanager.GetStack();
 
             foreach (var item in Stack)
             {
-                if (!stackName.Equals(item.name))
-                {
-                    continue;  
-                }
 
-                return new Stacks
+                allStacks.Add(new Stacks
                 {
                     id = item.id,
                     name = item.name,
                     size = item.size,
-                };
+                });
 
             }
 
-            return null;
+            return allStacks;
 
         }
 
