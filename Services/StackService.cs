@@ -1,14 +1,14 @@
-﻿
-
-using FlashCardManager.Controllers;
+﻿using FlashCardManager.Controllers;
 using FlashCardManager.Helpers;
 using FlashCardManager.Models;
 using Spectre.Console;
 
-namespace FlashCardManager.Client
+namespace FlashCardManager.Services
 {
     internal class StackService
     {
+        //Theres some things I want to implement and that issss, no null pointers yeyey
+        //Apparently its way better to just have a default class that is empty that you can return so you dont bump into nullExceptions
 
         internal void StackSelectionMenu()
         {
@@ -20,17 +20,10 @@ namespace FlashCardManager.Client
             while (isInStackSelection)
             {
 
-                String? userCommand = DisplayStackSelectionAndInput();
+                string userCommand = DisplayStackSelectionAndInput();
 
-                if (string.IsNullOrEmpty(userCommand))
-                    continue;
 
                 isInStackSelection = HandleStackSelectionResponse(userCommand);
-
-                if (!isInStackSelection) break;
-
-
-
 
             }
         }
@@ -73,7 +66,14 @@ namespace FlashCardManager.Client
                     CreateStackMenu();
                     return true;
                 case "Select a stack":
-                    SelectStackMenu();
+                    while (true)
+                    {
+                        var stack = SelectStackMenu();
+                        if (stack == Stacks.EmptyStack) break;
+
+                        bool changeStack = SelectedStackMenu(stack);
+                        if (!changeStack) break;
+                    }
                     return true;
 
             }
@@ -85,45 +85,35 @@ namespace FlashCardManager.Client
 
 
 
-        internal void SelectStackMenu()
+        internal Stacks SelectStackMenu()
         {
 
-            bool isInSelectionStack = true;
+            DisplayMethods.TitleCard();
 
-            while (isInSelectionStack)
+            var stacks = StackController.ProcessGetStack();
+
+
+            if (stacks.Count.Equals(0))
             {
 
-                DisplayMethods.TitleCard();
-
-                var stacks = StackController.ProcessGetStack();
-
-
-                if (stacks.Count.Equals(0))
-                {
-
-                    AnsiConsole.MarkupLine("[red]Invalid.[/]");
-                    UserInputMethods.Pause();
-                    return;
-
-                }
-
-
-                var selectedStack = AnsiConsole.Prompt(
-                new SelectionPrompt<Stacks>()
-                    .Title("Select a stack:")
-                    .PageSize(5)
-                    .AddChoices(stacks)
-                    .MoreChoicesText("Move down to reveal more")
-                    .UseConverter(stack => stack.name!)
-                );
-
-                bool continueSelection = SelectedStackMenu(selectedStack);
-                if (!continueSelection)
-                {
-                    isInSelectionStack = false;
-                }
+                AnsiConsole.MarkupLine("[red]Invalid.[/]");
+                UserInputMethods.Pause();
+                return Stacks.EmptyStack;
 
             }
+
+
+            var selectedStack = AnsiConsole.Prompt(
+            new SelectionPrompt<Stacks>()
+                .Title("Select a stack:")
+                .PageSize(5)
+                .AddChoices(stacks)
+                .MoreChoicesText("Move down to reveal more")
+                .UseConverter(stack => stack.name ?? "[Empty Name]")
+            );
+
+            return selectedStack;
+ 
         }
 
 
@@ -254,8 +244,8 @@ namespace FlashCardManager.Client
 
             while (true)
             {
-                var refreshedStack = Methods.RefreshStack(stacks.id);
-                if (refreshedStack == null)
+                var refreshedStack = Methods.RefreshStack(stacks.id) ?? Stacks.EmptyStack;
+                if (refreshedStack == Stacks.EmptyStack)
                 {
                     Console.WriteLine("Error: Stack no longer exists.");
                     UserInputMethods.Pause();
@@ -268,7 +258,8 @@ namespace FlashCardManager.Client
 
                 if (!stayInMenu)
                 {
-                    // Change stack OR return to main menu
+                    // Change stack OR return to main menu (Until now I dont know what to feel about this lmao)
+                    // But the primeagan did say to get used to be okay if IT WORKS, even tho rn I'm refactoring again XD
                     return userCommand == "Change current stack";
                 }
             }

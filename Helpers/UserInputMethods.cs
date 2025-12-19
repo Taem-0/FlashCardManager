@@ -19,6 +19,7 @@ namespace FlashCardManager.Helpers
 
         }
 
+
         internal static string PromptUserStackName()
         {
             var input = AnsiConsole.Prompt(
@@ -28,6 +29,7 @@ namespace FlashCardManager.Helpers
 
             return input == "0" ? string.Empty : input;
         }
+
 
         internal static void Pause()
         {
