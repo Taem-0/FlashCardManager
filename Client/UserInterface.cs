@@ -1,7 +1,7 @@
 ﻿
-using FlashCardManager.Controllers;
+using System.Runtime.CompilerServices;
 using FlashCardManager.Helpers;
-using FlashCardManager.Models;
+using FlashCardManager.Services;
 using Spectre.Console;
 
 namespace FlashCardManager.Client
@@ -10,6 +10,8 @@ namespace FlashCardManager.Client
     {
 
         private readonly StackService _stackService = new();
+        private readonly FlashCardService _flashCardService = new();   
+
 
         internal void MainMenu()
         {
@@ -51,7 +53,6 @@ namespace FlashCardManager.Client
         }
 
         
-
         private bool HandleMainMenuResponse(string userCommand)
         {
 
@@ -63,8 +64,7 @@ namespace FlashCardManager.Client
                     _stackService.StackSelectionMenu();
                     break;
                 case "Manage Flashcards":
-                    Console.WriteLine("UNDER CONSTRUCTION");
-                    UserInputMethods.Pause();
+                    _flashCardService.FlashCardStackSelectionMenu();
                     break;
                 case "Study":
                     Console.WriteLine("UNDER CONSTRUCTION");
