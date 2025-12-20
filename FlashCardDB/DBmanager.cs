@@ -27,18 +27,7 @@ namespace FlashCardManager.FlashCardDB
 
                     
                     int rowsAffected = command.ExecuteNonQuery();
-
-
-                    if (rowsAffected > 0)
-                    {
-                        Console.WriteLine("Successfully created stack.");
-                        Console.ReadLine();
-                    }
-                    else
-                    {
-                        Console.WriteLine("No rows affected.");
-                        Console.ReadLine();
-                    }
+                    
 
                 }
                 catch (MySqlException ex)
