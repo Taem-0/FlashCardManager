@@ -21,6 +21,8 @@ namespace FlashCardManager.Services
             while(isInFlashCardStackSelection)
             {
                 isInFlashCardStackSelection = FlashCardMenu(_stackService.SelectStackMenu());
+
+
             }
         }
 
@@ -36,9 +38,8 @@ namespace FlashCardManager.Services
                 var refreshedStack = Methods.RefreshStack(stacks.id) ?? Stacks.EmptyStack;
                 if (refreshedStack == Stacks.EmptyStack)
                 {
-                    Console.WriteLine("Error: Stack no longer exists.");
-                    UserInputMethods.Pause();
-                    return true;
+                    
+                    return false;
                 }
 
                 string userCommand = DisplayFlashCardSelectionAndInput();

@@ -96,7 +96,7 @@ namespace FlashCardManager.Services
             if (stacks.Count.Equals(0))
             {
 
-                AnsiConsole.MarkupLine("[red]Invalid.[/]");
+                AnsiConsole.MarkupLine("[red]No stacks found :<.[/]");
                 UserInputMethods.Pause();
                 return Stacks.EmptyStack;
 
@@ -146,10 +146,13 @@ namespace FlashCardManager.Services
 
             if (!StackController.ProcessAdd(stackName))
             {
+                AnsiConsole.MarkupLine("[red]Stack creation failed :<.[/]");
+                UserInputMethods.Pause();
+
                 return;
             }
 
-            AnsiConsole.MarkupLine("Successfully created stack");
+            AnsiConsole.MarkupLine("[yellow]Successfully created stack[/]");
             UserInputMethods.Pause();
 
         }
