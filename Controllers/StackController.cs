@@ -20,9 +20,10 @@ namespace FlashCardManager.Controllers
                 return false;
             }
 
-            Stacks stacks = new();
-
-            stacks.name = stackName;
+            Stacks stacks = new()
+            {
+                name = stackName
+            };
 
             DBmanager.PostStack(stacks);
 
@@ -33,12 +34,13 @@ namespace FlashCardManager.Controllers
         internal static bool ProcessUpdate(string updateStackName, Stacks currentStack)
         {
 
-            Stacks stacks = new();
+            Stacks stacks = new()
+            {
+                id = currentStack.id,
+                name = updateStackName,
+                size = currentStack.size
+            };
 
-            stacks.id = currentStack.id;
-            stacks.name = updateStackName;
-            stacks.size = currentStack.size;    
-            
             DBmanager.UpdateStack(stacks);
 
             return true;
@@ -50,7 +52,7 @@ namespace FlashCardManager.Controllers
         internal static List<Stacks> ProcessGetStack()
         {
             
-            List<Stacks> allStacks = new List<Stacks>();
+            List<Stacks> allStacks = [];
 
             var Stack = DBmanager.GetStack();
 
@@ -99,7 +101,7 @@ namespace FlashCardManager.Controllers
         //For users interface basically, just takes the DTO
         internal static List<StackDTO> ProcessGetStackDTO()
         {
-            List<StackDTO> tableDisplay = new();
+            List<StackDTO> tableDisplay = [];
 
             var Stack = DBmanager.GetStack();
 
@@ -107,7 +109,7 @@ namespace FlashCardManager.Controllers
             foreach (var item in Stack)
             {
 
-                StackDTO stack = new StackDTO
+                StackDTO stack = new()
                 {
                     nameDTO = item.name?.ToString(),
                     sizeDTO = item.size?.ToString() ?? "N/A",
@@ -131,14 +133,6 @@ namespace FlashCardManager.Controllers
             DBmanager.DeleteStack(stackID);
 
         }
-
-
-
-
-
-
-
-
 
 
 

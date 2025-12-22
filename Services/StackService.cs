@@ -10,7 +10,7 @@ namespace FlashCardManager.Services
         //Theres some things I want to implement and that issss, no null pointers yeyey
         //Apparently its way better to just have a default class that is empty that you can return so you dont bump into nullExceptions
 
-        internal void StackSelectionMenu()
+        internal static void StackSelectionMenu()
         {
 
             DisplayMethods.TitleCard();
@@ -29,7 +29,7 @@ namespace FlashCardManager.Services
         }
 
 
-        private string DisplayStackSelectionAndInput()
+        private static string DisplayStackSelectionAndInput()
         {
 
             DisplayMethods.SpecificClear(19, 10);
@@ -55,7 +55,7 @@ namespace FlashCardManager.Services
 
 
 
-        private bool HandleStackSelectionResponse(string userCommand)
+        private static bool HandleStackSelectionResponse(string userCommand)
         {
 
             switch (userCommand)
@@ -85,7 +85,7 @@ namespace FlashCardManager.Services
 
 
 
-        internal Stacks SelectStackMenu()
+        internal static Stacks SelectStackMenu()
         {
 
             DisplayMethods.TitleCard();
@@ -119,7 +119,7 @@ namespace FlashCardManager.Services
 
 
 
-        internal void CreateStackMenu()
+        internal static void CreateStackMenu()
         {
 
             DisplayMethods.TitleCard();
@@ -129,7 +129,7 @@ namespace FlashCardManager.Services
 
             if (string.IsNullOrEmpty(userCommand))
             {
-                AnsiConsole.MarkupLine("Cancelled");
+                AnsiConsole.MarkupLine("[red]Cancelled[/]");
                 UserInputMethods.Pause();
 
                 return;
@@ -141,7 +141,7 @@ namespace FlashCardManager.Services
         }
 
 
-        private void HandleCreateStackResponse(string stackName)
+        private static void HandleCreateStackResponse(string stackName)
         {
 
             if (!StackController.ProcessAdd(stackName))
@@ -162,7 +162,7 @@ namespace FlashCardManager.Services
 
 
 
-        internal void ConfirmUpdateStack(Stacks currentStack)
+        internal static void ConfirmUpdateStack(Stacks currentStack)
         {
             DisplayMethods.TitleCard();
 
@@ -173,7 +173,7 @@ namespace FlashCardManager.Services
         }
 
 
-        private void HandleUpdateStackResponse(string userCommand, Stacks currentStack)
+        private static void HandleUpdateStackResponse(string userCommand, Stacks currentStack)
         {
 
             if (string.IsNullOrEmpty(userCommand) || userCommand == "0")
@@ -202,7 +202,7 @@ namespace FlashCardManager.Services
 
 
 
-        internal void ConfirmDelete(Stacks currentStack)
+        internal static void ConfirmDelete(Stacks currentStack)
         {
 
             DisplayMethods.TitleCard();
@@ -214,7 +214,7 @@ namespace FlashCardManager.Services
         }
 
 
-        internal void HandleUserDeleteResponse(string userCommand, Stacks currentStack)
+        internal static void HandleUserDeleteResponse(string userCommand, Stacks currentStack)
         {
 
             if (userCommand.Equals("y"))
@@ -241,7 +241,7 @@ namespace FlashCardManager.Services
 
 
 
-        internal bool SelectedStackMenu(Stacks stacks)
+        internal static bool SelectedStackMenu(Stacks stacks)
         {
             DisplayMethods.TitleCard();
 
@@ -270,7 +270,7 @@ namespace FlashCardManager.Services
 
 
 
-        private string DisplaySelectedStack(Stacks stacks)
+        private static string DisplaySelectedStack(Stacks stacks)
         {
             DisplayMethods.TitleCard();
 
@@ -294,7 +294,7 @@ namespace FlashCardManager.Services
 
 
 
-        private bool HandleSelectedStackResponse(string userCommand, Stacks stacks)
+        private static bool HandleSelectedStackResponse(string userCommand, Stacks stacks)
         {
 
             switch (userCommand)
