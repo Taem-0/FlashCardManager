@@ -1,5 +1,6 @@
 ﻿
-
+using FlashCardManager.Client;
+using FlashCardManager.Controllers;
 using FlashCardManager.Helpers;
 using FlashCardManager.Models;
 using Spectre.Console;
@@ -12,7 +13,7 @@ namespace FlashCardManager.Services
         private readonly StackService _stackService = new();
 
 
-        internal void FlashCardStackSelectionMenu()
+        internal static void FlashCardStackSelectionMenu()
         {
             DisplayMethods.TitleCard();
 
@@ -20,13 +21,13 @@ namespace FlashCardManager.Services
 
             while(isInFlashCardStackSelection)
             {
-                isInFlashCardStackSelection = FlashCardMenu(_stackService.SelectStackMenu());
+                isInFlashCardStackSelection = FlashCardMenu(StackService.SelectStackMenu());
 
 
             }
         }
 
-        internal bool FlashCardMenu(Stacks stacks)
+        internal static bool FlashCardMenu(Stacks stacks)
         {
 
             DisplayMethods.TitleCard();
@@ -57,7 +58,7 @@ namespace FlashCardManager.Services
 
         }
 
-        private string DisplayFlashCardSelectionAndInput()
+        private static string DisplayFlashCardSelectionAndInput()
         {
             DisplayMethods.TitleCard();
 
@@ -66,7 +67,7 @@ namespace FlashCardManager.Services
                 "Change current stack",
                 "View all Flashcards in stack",
                 "Create a Flashcard in current stack",
-                "Edit current Flashcard",
+                "Edit a Flashcard",
                 "Delete a Flashcard"
            ];
 
@@ -79,7 +80,7 @@ namespace FlashCardManager.Services
 
         }
 
-        private bool HandleFlashCardMenuResponse(string userCommand, Stacks stacks)
+        private static bool HandleFlashCardMenuResponse(string userCommand, Stacks stacks)
         {
 
             switch( userCommand)
@@ -93,10 +94,9 @@ namespace FlashCardManager.Services
                     UserInputMethods.Pause();
                     return true;
                 case "Create a Flashcard in current stack":
-                    Console.WriteLine("UNDER CONSTRUCTION");
-                    UserInputMethods.Pause();
+                    CreateFlashCardMenu(stacks);
                     return true;
-                case "Edit current Flashcard":
+                case "Edit a Flashcard":
                     Console.WriteLine("UNDER CONSTRUCTION");
                     UserInputMethods.Pause();
                     return true;
@@ -108,6 +108,60 @@ namespace FlashCardManager.Services
                     return true;  
 
             }
+        }
+
+
+        internal static void CreateFlashCardMenu(Stacks stacks)
+        {
+
+            DisplayMethods.TitleCard();
+
+            string frontSide = UserInputMethods.PromptFlashCardFront();
+
+            if (string.IsNullOrEmpty(frontSide))
+            {
+
+                AnsiConsole.MarkupLine("[red]Cancelled[/]");
+                UserInputMethods.Pause();
+
+                return;
+
+            }
+
+
+            string backSide = UserInputMethods.PromptFlashCardBack();
+
+            if (string.IsNullOrEmpty(backSide))
+            {
+
+                AnsiConsole.MarkupLine("[red]Cancelled[/]");
+                UserInputMethods.Pause();
+
+                return;
+
+            }
+
+            HandleCreateFlashCard(frontSide, backSide, stacks);
+
+        }
+
+        private static void HandleCreateFlashCard(string frontSide, string backSide, Stacks stacks)
+        {
+
+            if (!FlashcardController.ProcessAdd(frontSide, backSide, stacks))
+            {
+
+                AnsiConsole.MarkupLine("[red]Card creation failed :<.[/]");
+                UserInputMethods.Pause();
+
+                return;
+
+            }
+
+            AnsiConsole.MarkupLine("[yellow]Successfully created card[/]");
+            UserInputMethods.Pause();
+
+
         }
 
 

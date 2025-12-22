@@ -1,5 +1,4 @@
 ﻿
-using System.Runtime.CompilerServices;
 using FlashCardManager.Helpers;
 using FlashCardManager.Services;
 using Spectre.Console;
@@ -61,10 +60,10 @@ namespace FlashCardManager.Client
                 case "Exit":
                     return true;
                 case "Manage Stacks":
-                    _stackService.StackSelectionMenu();
+                    StackService.StackSelectionMenu();
                     break;
                 case "Manage Flashcards":
-                    _flashCardService.FlashCardStackSelectionMenu();
+                    FlashCardService.FlashCardStackSelectionMenu();
                     break;
                 case "Study":
                     Console.WriteLine("UNDER CONSTRUCTION");
@@ -75,7 +74,7 @@ namespace FlashCardManager.Client
                     UserInputMethods.Pause();
                     break;
                 case "x":
-                    _stackService.StackSelectionMenu();
+                    StackService.StackSelectionMenu();
                     break;
                 default:
                     Console.WriteLine("Invalid.");

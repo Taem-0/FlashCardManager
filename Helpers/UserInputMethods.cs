@@ -39,6 +39,46 @@ namespace FlashCardManager.Helpers
             );
         }
 
+        internal static string PromptFlashCardFront()
+        {
+
+            string input = AnsiConsole.Prompt(
+                new TextPrompt<String>("Enter Front Side or [grey]0 to cancel[/]:")
+                    .AllowEmpty()
+            ).Trim();
+
+            if (string.IsNullOrWhiteSpace(input) || input.Equals("0"))
+            {
+
+                return string.Empty;
+                
+
+            }
+
+            return input;
+
+        }
+
+        internal static string PromptFlashCardBack()
+        {
+
+            string input = AnsiConsole.Prompt(
+                new TextPrompt<String>("Enter Back Side or [grey]0 to cancel[/]:")
+                    .AllowEmpty()
+            ).Trim();
+
+            if (string.IsNullOrWhiteSpace(input) || input.Equals("0"))
+            {
+
+                
+                return string.Empty;
+
+            }
+
+            return input;
+
+        }
+
 
     }
 }
