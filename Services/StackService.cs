@@ -183,13 +183,21 @@ namespace FlashCardManager.Services
                 return;
             }
 
-            if (!StackController.ProcessUpdate(userCommand, currentStack))
+
+            Stacks updatedStack = new()
+            {
+                id = currentStack.id,
+                name = userCommand,
+                size = currentStack.size
+            };
+
+
+            if (!StackController.ProcessUpdate(updatedStack))
             {
                 Console.WriteLine("Cancelled");
                 UserInputMethods.Pause();
                 return;
             }
-
 
             Console.Write("Successfully updated stack.");
             UserInputMethods.Pause();

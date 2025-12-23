@@ -108,7 +108,7 @@ namespace FlashCardManager.FlashCardDB
                 {
                     id = reader.GetInt32(0),
                     name = reader.GetString(1),
-                    size = reader.IsDBNull(2) ? (int?)null : reader.GetInt32(2)
+                    size =  reader.GetInt32(2)
                 });
             }
 
@@ -166,6 +166,55 @@ namespace FlashCardManager.FlashCardDB
             }
 
         }
+
+
+
+        internal static List<FlashCards> GetFlashCard()
+        {
+
+            List<FlashCards> tableData = [];
+
+            using var connection = Methods.CreateConnection(connectionString_DataBase);
+            using var command = connection.CreateCommand();
+            try
+            {
+                command.CommandText = @"SELECT * FROM flashcards;";
+
+                using var reader = command.ExecuteReader();
+
+                if (!reader.HasRows)
+                    return tableData;
+
+                ReadFlashcards(reader, tableData);
+
+
+            } 
+            catch (MySqlException ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+            } 
+
+            return tableData;
+
+        }
+
+
+        private static void ReadFlashcards(MySqlDataReader reader, List<FlashCards> tableData)
+        {
+
+            while (reader.Read())
+            {
+                tableData.Add(new FlashCards
+                {
+                    id = reader.GetInt32(0),
+                    front = reader.GetString(1),
+                    back = reader.GetString(2),
+                    stackId = reader.GetInt32(3),
+                });
+            }
+
+        }
+
 
         #endregion
 

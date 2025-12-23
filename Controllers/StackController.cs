@@ -31,13 +31,13 @@ namespace FlashCardManager.Controllers
 
         }
 
-        internal static bool ProcessUpdate(string updateStackName, Stacks currentStack)
+        internal static bool ProcessUpdate(Stacks currentStack)
         {
 
             Stacks stacks = new()
             {
                 id = currentStack.id,
-                name = updateStackName,
+                name = currentStack.name,
                 size = currentStack.size
             };
 
