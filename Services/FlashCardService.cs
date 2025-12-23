@@ -143,6 +143,9 @@ namespace FlashCardManager.Services
 
             HandleCreateFlashCard(frontSide, backSide, stacks);
 
+
+
+
         }
 
         private static void HandleCreateFlashCard(string frontSide, string backSide, Stacks stacks)
@@ -157,6 +160,24 @@ namespace FlashCardManager.Services
                 return;
 
             }
+
+
+            List<FlashCards> flashCards = FlashcardController.ProcessGetFlashcardByID(stacks.id);
+
+            Stacks updatedStack = new()
+            {
+                id = stacks.id,
+                name = stacks.name,
+                size = flashCards.Count
+            };
+
+            
+
+            if (!StackController.ProcessUpdate(updatedStack))
+            {
+                AnsiConsole.MarkupLine("[red]failed :<.[/]");
+            }
+
 
             AnsiConsole.MarkupLine("[yellow]Successfully created card[/]");
             UserInputMethods.Pause();
