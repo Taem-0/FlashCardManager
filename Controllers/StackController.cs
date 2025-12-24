@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Diagnostics;
-using System.Text;
+﻿
 using FlashCardManager.DTO_s;
 using FlashCardManager.FlashCardDB;
 
