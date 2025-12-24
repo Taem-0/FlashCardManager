@@ -1,4 +1,5 @@
 ﻿
+using FlashCardManager.DTO_s;
 using FlashCardManager.FlashCardDB;
 using FlashCardManager.Models;
 
@@ -73,6 +74,33 @@ namespace FlashCardManager.Controllers
             }
 
             return flashCards;
+
+        }
+
+
+        internal static List<FlashcardDTO> ProcessGetFlashcardDTO()
+        {
+            List<FlashcardDTO> tableDisplay = [];
+
+            var flashCard = DBmanager.GetFlashCard();
+
+
+            foreach (var item in flashCard)
+            {
+
+                FlashcardDTO flashCards = new()
+                {
+                    idDTO = item.id.ToString(),
+                    frontDTO = item.front,
+                    backDTO = item.back,
+                    
+                };
+
+                tableDisplay.Add(flashCards);
+
+            }
+
+            return tableDisplay;
 
         }
 

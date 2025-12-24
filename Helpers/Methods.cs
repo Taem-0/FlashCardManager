@@ -26,6 +26,22 @@ namespace FlashCardManager.Helpers
             return stackList;
         }
 
+        internal static List<FlashcardDTO> CheckFlashcards()
+        {
+            var flashcardList = FlashcardController.ProcessGetFlashcardDTO();
+
+            if (flashcardList.Count > 0)
+            {
+                TableVisualizer.flashCardTable(flashcardList);
+            }
+            else
+            {
+                Console.WriteLine("No records found :<");
+            }
+
+            return flashcardList;
+        }
+        
 
         internal static MySqlConnection CreateConnection(string connectionString)
         {
