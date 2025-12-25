@@ -80,5 +80,32 @@ namespace FlashCardManager.Helpers
         }
 
 
+
+
+        internal static int PromptFlashCardID()
+        {
+
+            string input = AnsiConsole.Prompt(
+                new TextPrompt<string>("Enter the id of the flashcard or [grey]0 to cancel[/]:  ")
+                    .AllowEmpty()
+            );
+
+           
+
+            if (string.IsNullOrWhiteSpace(input))
+            {
+
+                AnsiConsole.MarkupLine("[red]Invalid[/]");
+                UserInputMethods.Pause();
+                return 0;
+
+            }
+
+            int.TryParse(input, out var id);
+
+            return id;
+
+
+        }
     }
 }

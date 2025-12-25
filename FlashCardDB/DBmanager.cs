@@ -216,6 +216,30 @@ namespace FlashCardManager.FlashCardDB
         }
 
 
+        internal static void DeleteFlashcard(int id)
+        {
+
+            using var connection = Methods.CreateConnection(connectionString_DataBase);
+            using var command = connection.CreateCommand();
+
+            try
+            {
+
+                command.CommandText = @"DELETE FROM flashcards WHERE Flashcards_ID = @id";
+
+                command.Parameters.AddWithValue("@id", id);
+
+                command.ExecuteNonQuery();
+
+            }
+            catch (MySqlException ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+            }
+
+
+        }
+
         #endregion
 
 

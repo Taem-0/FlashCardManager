@@ -1,6 +1,7 @@
 ﻿
 using FlashCardManager.Client;
 using FlashCardManager.Controllers;
+using FlashCardManager.DTO_s;
 using FlashCardManager.Helpers;
 using FlashCardManager.Models;
 using Spectre.Console;
@@ -100,14 +101,15 @@ namespace FlashCardManager.Services
                     UserInputMethods.Pause();
                     return true;
                 case "Delete a Flashcard":
-                    Console.WriteLine("UNDER CONSTRUCTION");
-                    UserInputMethods.Pause();
+                    DisplayDeleteMenu();
                     return true;
                 default: 
                     return true;  
 
             }
         }
+
+
 
 
         internal static void DisplayFlashcardTable()
@@ -172,6 +174,7 @@ namespace FlashCardManager.Services
 
         }
 
+
         private static void HandleCreateFlashCard(string frontSide, string backSide, Stacks stacks)
         {
 
@@ -206,6 +209,73 @@ namespace FlashCardManager.Services
             AnsiConsole.MarkupLine("[yellow]Successfully created card[/]");
             UserInputMethods.Pause();
 
+
+        }
+
+
+
+
+        private static void DisplayDeleteMenu()
+        {
+
+            DisplayMethods.TitleCard();
+
+            var flashcards = FlashcardController.ProcessGetFlashcards();
+
+
+            if (flashcards.Count.Equals(0))
+            {
+
+                AnsiConsole.MarkupLine("[red]No stacks found :<.[/]");
+                UserInputMethods.Pause();
+                return;
+
+            }
+
+
+            var selectedFlashcard = AnsiConsole.Prompt(
+            new SelectionPrompt<FlashCards>()
+                .Title("Select a stack:")
+                .PageSize(5)
+                .AddChoices(flashcards)
+                .MoreChoicesText("Move down to reveal more")
+                .UseConverter(flashcards => flashcards.front ?? "[Empty]")
+            );
+
+            ConfirmDelete(selectedFlashcard);
+
+        }
+
+        internal static void ConfirmDelete(FlashCards selectedFlashcard)
+        {
+
+            DisplayMethods.TitleCard();
+
+            string userCommand = UserInputMethods.PromptUserConfirmation();
+
+            HandleDeleteResponse(userCommand, selectedFlashcard);
+
+        }
+
+        internal static void HandleDeleteResponse(string userCommand, FlashCards selectedFlashcard)
+        {
+
+            if (userCommand.Equals("y"))
+            {
+                FlashcardController.ProcessDeleteFlashcard(selectedFlashcard);
+                Console.WriteLine("Stack deleted successfully");
+                UserInputMethods.Pause();
+            }
+            else if (userCommand.Equals("n"))
+            {
+                Console.WriteLine("Cancelled successfully");
+                UserInputMethods.Pause();
+            }
+            else
+            {
+                Console.WriteLine("Invalid");
+                UserInputMethods.Pause();
+            }
 
         }
 
