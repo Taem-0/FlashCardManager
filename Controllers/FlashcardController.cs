@@ -105,5 +105,14 @@ namespace FlashCardManager.Controllers
         }
 
 
+
+
+        internal static void ProcessDeleteFlashcard(FlashCards flashCards)
+        {
+
+            int flashcardID = flashCards.id;
+            DBmanager.DeleteFlashcard(flashcardID);
+
+        }
     }
 }
