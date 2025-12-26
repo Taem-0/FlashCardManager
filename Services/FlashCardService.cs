@@ -91,7 +91,7 @@ namespace FlashCardManager.Services
                 case "Change current stack":
                     return false;
                 case "View all Flashcards in stack":
-                    DisplayFlashcardTable();
+                    DisplayFlashcardTable(stacks);
                     return true;
                 case "Create a Flashcard in current stack":
                     CreateFlashCardMenu(stacks);
@@ -112,27 +112,16 @@ namespace FlashCardManager.Services
 
 
 
-        internal static void DisplayFlashcardTable()
+        internal static void DisplayFlashcardTable(Stacks stacks)
         {
 
             DisplayMethods.TitleCard();
             
-            Methods.CheckFlashcards();
-            AnsiConsole.MarkupLine("\n--------------------------------------------------");
+            Methods.CheckFlashcards(stacks);
+            AnsiConsole.MarkupLine("\n------------------------------\n");
 
-            List<string> menuChoices = [
-                "Return"
-            ];
 
-            string choice = AnsiConsole.Prompt(
-                new SelectionPrompt<string>()
-                    .AddChoices(menuChoices)
-                );
-
-            if (choice == "Return")
-            {
-                return;
-            }
+            UserInputMethods.Pause();
 
         }
 

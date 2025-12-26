@@ -26,9 +26,13 @@ namespace FlashCardManager.Helpers
             return stackList;
         }
 
-        internal static List<FlashcardDTO> CheckFlashcards()
+
+        internal static List<FlashcardDTO> CheckFlashcards(Stacks stacks)
         {
-            var flashcardList = FlashcardController.ProcessGetFlashcardDTO();
+
+            int stackID = stacks.id;
+
+            var flashcardList = FlashcardController.ProcessGetFlashcardDTO(stackID);
 
             if (flashcardList.Count > 0)
             {
@@ -42,6 +46,7 @@ namespace FlashCardManager.Helpers
             return flashcardList;
         }
         
+
 
         internal static MySqlConnection CreateConnection(string connectionString)
         {
