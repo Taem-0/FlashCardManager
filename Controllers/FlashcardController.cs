@@ -78,11 +78,11 @@ namespace FlashCardManager.Controllers
         }
 
 
-        internal static List<FlashcardDTO> ProcessGetFlashcardDTO()
+        internal static List<FlashcardDTO> ProcessGetFlashcardDTO(int stackID)
         {
             List<FlashcardDTO> tableDisplay = [];
 
-            var flashCard = DBmanager.GetFlashCard();
+            var flashCard = ProcessGetFlashcardByID(stackID);
 
 
             foreach (var item in flashCard)
