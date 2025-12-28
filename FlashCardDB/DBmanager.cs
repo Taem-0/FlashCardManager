@@ -155,7 +155,35 @@ namespace FlashCardManager.FlashCardDB
 
                 command.Parameters.AddWithValue("@front", flashCards.front);
                 command.Parameters.AddWithValue("@back", flashCards.back);
-                command.Parameters.AddWithValue("stackID", flashCards.stackId);
+                command.Parameters.AddWithValue("@stackID", flashCards.stackId);
+
+                int rowsAffected = command.ExecuteNonQuery();
+
+            }
+            catch (MySqlException ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+            }
+
+        }
+
+
+
+
+        internal static void UpdateFlashCard(FlashCards flashCard)
+        {
+
+            using var connection = Methods.CreateConnection(connectionString_DataBase);
+            using var command = connection.CreateCommand();
+            try
+            {
+                command.CommandText = @"UPDATE flashcards
+                                            SET Front = @front, Back = @back
+                                            WHERE Flashcards_ID = @id";
+
+                command.Parameters.AddWithValue("@front", flashCard.front);
+                command.Parameters.AddWithValue("@back", flashCard.back);
+                command.Parameters.AddWithValue("@id", flashCard.id);
 
                 int rowsAffected = command.ExecuteNonQuery();
 

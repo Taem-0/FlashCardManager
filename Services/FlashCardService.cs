@@ -5,6 +5,7 @@ using FlashCardManager.DTO_s;
 using FlashCardManager.Helpers;
 using FlashCardManager.Models;
 using Spectre.Console;
+using Spectre.Console.Cli;
 
 namespace FlashCardManager.Services
 {
@@ -97,11 +98,10 @@ namespace FlashCardManager.Services
                     CreateFlashCardMenu(stacks);
                     return true;
                 case "Edit a Flashcard":
-                    Console.WriteLine("UNDER CONSTRUCTION");
-                    UserInputMethods.Pause();
+                    DisplayEditMenu(stacks);
                     return true;
                 case "Delete a Flashcard":
-                    DisplayDeleteMenu();
+                    DisplayDeleteMenu(stacks);
                     return true;
                 default: 
                     return true;  
@@ -131,7 +131,7 @@ namespace FlashCardManager.Services
 
             DisplayMethods.TitleCard();
 
-            string frontSide = UserInputMethods.PromptFlashCardFront();
+            string frontSide = UserInputMethods.PromptFlashCardName();
 
             if (string.IsNullOrEmpty(frontSide))
             {
@@ -144,7 +144,7 @@ namespace FlashCardManager.Services
             }
 
 
-            string backSide = UserInputMethods.PromptFlashCardBack();
+            string backSide = UserInputMethods.PromptFlashCardName();
 
             if (string.IsNullOrEmpty(backSide))
             {
@@ -204,36 +204,196 @@ namespace FlashCardManager.Services
 
 
 
-        private static void DisplayDeleteMenu()
+        private static void DisplayEditMenu(Stacks stacks)
+        {
+
+            bool isInEdit = true;
+
+            while (isInEdit)
+            {
+
+                DisplayMethods.TitleCard();
+
+                List<string> menuChoices = [
+                    "Return",
+                    "Select a flashcard"
+                ];
+
+                string choice = AnsiConsole.Prompt(
+                new SelectionPrompt<String>()
+                    .AddChoices(menuChoices)
+                );
+
+                isInEdit = HandleEditMenu(stacks, choice);
+
+            }
+
+        }
+
+
+        internal static bool HandleEditMenu(Stacks stacks, String choice)
         {
 
             DisplayMethods.TitleCard();
 
-            var flashcards = FlashcardController.ProcessGetFlashcards();
-
-
-            if (flashcards.Count.Equals(0))
+            if (choice.Equals("Return"))
             {
 
-                AnsiConsole.MarkupLine("[red]No stacks found :<.[/]");
-                UserInputMethods.Pause();
-                return;
+                return false;
 
             }
 
+            var selectedFlashcard = SelectFlashCard(stacks);
 
-            var selectedFlashcard = AnsiConsole.Prompt(
-            new SelectionPrompt<FlashCards>()
-                .Title("Select a stack:")
-                .PageSize(5)
-                .AddChoices(flashcards)
-                .MoreChoicesText("Move down to reveal more")
-                .UseConverter(flashcards => flashcards.front ?? "[Empty]")
+            if (selectedFlashcard.Equals(FlashCards.EmptyFlashCard))
+            {
+                return true;
+            }
+
+            PromptFlashcardSide(selectedFlashcard);
+
+            return true;
+
+        }
+
+        internal static void PromptFlashcardSide(FlashCards flashCard)
+        {
+
+            DisplayMethods.TitleCard();
+
+            List<string> menuChoices = [
+                   "Return",
+                   "Front",
+                   "Back"
+               ];
+
+            string choice = AnsiConsole.Prompt(
+            new SelectionPrompt<String>()
+                .AddChoices(menuChoices)
             );
+
+            HandleFlashCardUpdate(flashCard, choice);
+
+        } 
+
+
+        internal static void HandleFlashCardUpdate(FlashCards flashCard, string choice)
+        {
+
+            string userInput;
+
+
+            switch (choice)
+            {
+                case "Return":
+                    return;
+                case "Front":
+
+                    userInput = UserInputMethods.PromptFlashCardName();
+
+                    if (string.IsNullOrEmpty(userInput))
+                    {
+
+                        AnsiConsole.MarkupLine("[red]Cancelled[/]");
+                        UserInputMethods.Pause();
+
+                        return;
+
+                    }
+
+                    if (!FlashcardController.ProcessUpdateFront(flashCard, userInput))
+                    {
+                        AnsiConsole.MarkupLine("[red]Failed to update :<[/]");
+                    }
+
+                    AnsiConsole.MarkupLine("[green]Successfully updated[/]");
+                    UserInputMethods.Pause();
+
+                    break;
+
+                case "Back":
+
+                    userInput = UserInputMethods.PromptFlashCardName();
+
+                    if (string.IsNullOrEmpty(userInput))
+                    {
+
+                        AnsiConsole.MarkupLine("[red]Cancelled[/]");
+                        UserInputMethods.Pause();
+
+                        return;
+
+                    }
+
+                    AnsiConsole.MarkupLine("[green]Successfully updated[/]");
+                    UserInputMethods.Pause();
+
+                    if (!FlashcardController.ProcessUpdateBack(flashCard, userInput))
+                    {
+                        AnsiConsole.MarkupLine("[red]Failed to update :<[/]");
+                    }
+
+                    break;
+            }
+
+        }
+
+        
+
+
+        private static void DisplayDeleteMenu(Stacks stacks)
+        {
+
+            bool isDeleting = true;
+
+            while (isDeleting)
+            {
+
+                DisplayMethods.TitleCard();
+
+                List<string> menuChoices = [
+                    "Return",
+                    "Select a flashcard"
+                ];
+
+                var choice = AnsiConsole.Prompt(
+                new SelectionPrompt<String>()
+                    .PageSize(5)
+                    .AddChoices(menuChoices)
+                );
+
+                isDeleting = HandleDeleteMenu(stacks, choice);
+
+            }
+
+        }
+
+
+        internal static bool HandleDeleteMenu(Stacks stacks, string menuChoice)
+        {
+
+            DisplayMethods.TitleCard();
+
+            if (menuChoice.Equals("Return"))
+            {
+
+                return false;
+
+            }
+
+            var selectedFlashcard = SelectFlashCard(stacks);
+
+            if (selectedFlashcard.Equals(FlashCards.EmptyFlashCard))
+            {
+                return true;
+            }
 
             ConfirmDelete(selectedFlashcard);
 
+            return true;
+
         }
+
 
         internal static void ConfirmDelete(FlashCards selectedFlashcard)
         {
@@ -245,6 +405,7 @@ namespace FlashCardManager.Services
             HandleDeleteResponse(userCommand, selectedFlashcard);
 
         }
+
 
         internal static void HandleDeleteResponse(string userCommand, FlashCards selectedFlashcard)
         {
@@ -269,6 +430,36 @@ namespace FlashCardManager.Services
         }
 
 
+
+
+        internal static FlashCards SelectFlashCard(Stacks stacks)
+        {
+
+            List<FlashCards> flashcards = FlashcardController.ProcessGetFlashcardByID(stacks.id);
+
+
+            if (flashcards.Count.Equals(0))
+            {
+
+                AnsiConsole.MarkupLine("[red]No stacks found :<.[/]");
+                UserInputMethods.Pause();
+                return FlashCards.EmptyFlashCard;
+
+            }
+
+
+            var selectedFlashcard = AnsiConsole.Prompt(
+            new SelectionPrompt<FlashCards>()
+                .Title("Select a flashcard:")
+                .PageSize(5)
+                .AddChoices(flashcards)
+                .MoreChoicesText("Move down to reveal more")
+                .UseConverter(flashcards => flashcards.front ?? "[Empty]")
+            );
+
+            return selectedFlashcard;
+
+        }
 
 
     }

@@ -39,11 +39,11 @@ namespace FlashCardManager.Helpers
             );
         }
 
-        internal static string PromptFlashCardFront()
+        internal static string PromptFlashCardName()
         {
 
             string input = AnsiConsole.Prompt(
-                new TextPrompt<String>("Enter Front Side or [grey]0 to cancel[/]:")
+                new TextPrompt<String>("Enter the side or [grey]0 to cancel[/]:")
                     .AllowEmpty()
             ).Trim();
 
@@ -52,26 +52,6 @@ namespace FlashCardManager.Helpers
 
                 return string.Empty;
                 
-
-            }
-
-            return input;
-
-        }
-
-        internal static string PromptFlashCardBack()
-        {
-
-            string input = AnsiConsole.Prompt(
-                new TextPrompt<String>("Enter Back Side or [grey]0 to cancel[/]:")
-                    .AllowEmpty()
-            ).Trim();
-
-            if (string.IsNullOrWhiteSpace(input) || input.Equals("0"))
-            {
-
-                
-                return string.Empty;
 
             }
 
@@ -101,7 +81,7 @@ namespace FlashCardManager.Helpers
 
             }
 
-            int.TryParse(input, out var id);
+            _ = int.TryParse(input, out int id);
 
             return id;
 

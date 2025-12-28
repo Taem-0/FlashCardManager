@@ -1,7 +1,9 @@
 ﻿
 using FlashCardManager.DTO_s;
 using FlashCardManager.FlashCardDB;
+using FlashCardManager.Helpers;
 using FlashCardManager.Models;
+using Spectre.Console;
 
 namespace FlashCardManager.Controllers
 {
@@ -26,6 +28,8 @@ namespace FlashCardManager.Controllers
         } 
 
 
+
+
         internal static List<FlashCards> ProcessGetFlashcards()
         {
             List<FlashCards> flashCards = [];
@@ -48,6 +52,7 @@ namespace FlashCardManager.Controllers
             return flashCards;
 
         }
+
 
         internal static List<FlashCards> ProcessGetFlashcardByID(int stackId)
         {
@@ -114,5 +119,50 @@ namespace FlashCardManager.Controllers
             DBmanager.DeleteFlashcard(flashcardID);
 
         }
+
+
+
+
+        internal static bool ProcessUpdateFront(FlashCards flashCard, string update)
+        {
+
+
+            FlashCards flashcardUpdate = new()
+            {
+
+                id = flashCard.id,
+                front = update,
+                back = flashCard.back,
+                stackId = flashCard.stackId,
+
+            };
+
+            DBmanager.UpdateFlashCard(flashcardUpdate);
+            return true;
+
+        }
+
+        internal static bool ProcessUpdateBack(FlashCards flashCard, string update)
+        {
+
+
+            FlashCards flashcardUpdate = new()
+            {
+
+                id = flashCard.id,
+                front = flashCard.front,
+                back = update,
+                stackId = flashCard.stackId,
+
+            };
+
+            DBmanager.UpdateFlashCard(flashcardUpdate);
+            return true;
+
+        }
+
+
+
+
     }
 }
