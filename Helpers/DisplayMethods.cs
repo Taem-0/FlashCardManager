@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using FlashCardManager.Models;
 
 namespace FlashCardManager.Helpers
 {
@@ -49,9 +50,34 @@ namespace FlashCardManager.Helpers
 
         }
 
-        
+
+        internal static string FlashcardToDisplay(FlashCards card)
+        {
+
+            const int columnWidth = 25;
 
 
+            string front = ColumnFormat(card.front, columnWidth);
+            string back = ColumnFormat(card.back, columnWidth);
+
+            return front + back;
+ 
+        }
+
+
+
+        internal static string ColumnFormat(string? text, int columnWidth)
+        {
+            if (string.IsNullOrEmpty(text))
+                text = "[Empty]";
+
+            return text.Length >  columnWidth
+                ? string.Concat(text.AsSpan(0, columnWidth - 1), "…")
+                : text.PadRight(columnWidth);    
+
+            //dont even know what asSpan is the IDE just recommended it lmao
+
+        }  
 
 
     }
