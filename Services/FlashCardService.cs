@@ -429,8 +429,7 @@ namespace FlashCardManager.Services
 
         }
 
-
-
+        
 
         internal static FlashCards SelectFlashCard(Stacks stacks)
         {
@@ -447,20 +446,21 @@ namespace FlashCardManager.Services
 
             }
 
+            AnsiConsole.MarkupLine("  [bold]Front[/]".PadRight(35) + "[bold]Back[/]");
+
+            AnsiConsole.MarkupLine("-----------------------------------------------");
 
             var selectedFlashcard = AnsiConsole.Prompt(
             new SelectionPrompt<FlashCards>()
-                .Title("Select a flashcard:")
                 .PageSize(5)
                 .AddChoices(flashcards)
                 .MoreChoicesText("Move down to reveal more")
-                .UseConverter(flashcards => flashcards.front ?? "[Empty]")
+                .UseConverter(DisplayMethods.FlashcardToDisplay)
             );
 
             return selectedFlashcard;
 
         }
-
 
     }
 }
