@@ -388,31 +388,46 @@ namespace FlashCardManager.Services
                 return true;
             }
 
-            ConfirmDelete(selectedFlashcard);
+            ConfirmDelete(selectedFlashcard, stacks);
 
             return true;
 
         }
 
 
-        internal static void ConfirmDelete(FlashCards selectedFlashcard)
+        internal static void ConfirmDelete(FlashCards selectedFlashcard, Stacks stacks)
         {
 
             DisplayMethods.TitleCard();
 
             string userCommand = UserInputMethods.PromptUserConfirmation();
 
-            HandleDeleteResponse(userCommand, selectedFlashcard);
+            HandleDeleteResponse(userCommand, selectedFlashcard, stacks);
 
         }
 
 
-        internal static void HandleDeleteResponse(string userCommand, FlashCards selectedFlashcard)
+        internal static void HandleDeleteResponse(string userCommand, FlashCards selectedFlashcard, Stacks stacks)
         {
 
             if (userCommand.Equals("y"))
             {
                 FlashcardController.ProcessDeleteFlashcard(selectedFlashcard);
+
+                List<FlashCards> flashCards = FlashcardController.ProcessGetFlashcardByID(stacks.id);
+
+                Stacks updatedStack = new()
+                {
+                    id = stacks.id,
+                    name = stacks.name,
+                    size = flashCards.Count
+                };
+
+                if (!StackController.ProcessUpdate(updatedStack))
+                {
+                    AnsiConsole.MarkupLine("[red]failed :<.[/]");
+                }
+
                 Console.WriteLine("Stack deleted successfully");
                 UserInputMethods.Pause();
             }
