@@ -291,6 +291,11 @@ namespace FlashCardManager.Services
 
             AnsiConsole.MarkupLine($"Current working stack: {stacks.name} ");
             AnsiConsole.MarkupLine("\n--------------------------------------------------");
+
+            Methods.CheckFlashcards(stacks);
+            AnsiConsole.MarkupLine("\n--------------------------------------------------");
+
+
             string choice = AnsiConsole.Prompt(
                 new SelectionPrompt<string>()
                     .AddChoices(menuChoices)
