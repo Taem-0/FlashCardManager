@@ -89,19 +89,20 @@ namespace FlashCardManager.Controllers
 
             var flashCard = ProcessGetFlashcardByID(stackID);
 
+            int count = 1;
 
             foreach (var item in flashCard)
             {
 
                 FlashcardDTO flashCards = new()
                 {
-                    idDTO = item.id.ToString(),
+                    idDTO = count.ToString(),
                     frontDTO = item.front,
                     backDTO = item.back,
-                    
                 };
 
                 tableDisplay.Add(flashCards);
+                count++;
 
             }
 
