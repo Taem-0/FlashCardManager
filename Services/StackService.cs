@@ -32,7 +32,7 @@ namespace FlashCardManager.Services
         private static string DisplayStackSelectionAndInput()
         {
 
-            DisplayMethods.SpecificClear(19, 10);
+            DisplayMethods.TitleCard();
 
             Methods.CheckStacks();
             AnsiConsole.MarkupLine("\n--------------------------------------------------");

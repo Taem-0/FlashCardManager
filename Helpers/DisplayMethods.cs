@@ -12,7 +12,7 @@ namespace FlashCardManager.Helpers
 
         internal static void SpecificClear(int startLine, int lineCount)
         {
-
+            //Cortisol spike grrrr
             Console.SetCursorPosition(0, startLine);
 
             for (int i = 0; i < lineCount; i++)
