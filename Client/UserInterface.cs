@@ -66,8 +66,7 @@ namespace FlashCardManager.Client
                     FlashCardService.FlashCardStackSelectionMenu();
                     break;
                 case "Study":
-                    Console.WriteLine("UNDER CONSTRUCTION");
-                    UserInputMethods.Pause();
+                    StudyService.StudySelection();
                     break;
                 case "View study sessions":
                     Console.WriteLine("UNDER CONSTRUCTION");
