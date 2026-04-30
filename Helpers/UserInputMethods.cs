@@ -1,5 +1,7 @@
 ﻿
+using FlashCardManager.DTO_s;
 using Spectre.Console;
+using System.Collections;
 
 namespace FlashCardManager.Helpers
 {
@@ -52,14 +54,31 @@ namespace FlashCardManager.Helpers
 
                 return string.Empty;
                 
-
             }
 
             return input;
 
         }
 
+        internal static string PromptFlashcardQuestion(FlashcardDTO flashcard)
+        {
 
+            string input = AnsiConsole.Prompt(
+                new TextPrompt<String>("Your answer:\n")
+                    .AllowEmpty()
+            ).Trim();
+
+            if (input.Equals("0"))
+            {
+
+                return "0";
+
+            }
+
+            return input;
+
+
+        }
 
 
         internal static int PromptFlashCardID()

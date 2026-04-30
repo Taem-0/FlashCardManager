@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using FlashCardManager.DTO_s;
 using FlashCardManager.Models;
+using Spectre.Console;
 
 namespace FlashCardManager.Helpers
 {
@@ -77,7 +79,16 @@ namespace FlashCardManager.Helpers
 
             //dont even know what asSpan is the IDE just recommended it lmao
 
-        }  
+        } 
+
+        internal static void DisplayOverScreen(int score, List<FlashcardDTO> flashcards)
+        {
+            TitleCard();
+
+            AnsiConsole.MarkupLine($"You answered {score} out of {flashcards.Count}");
+
+            UserInputMethods.Pause();
+        }
 
 
     }

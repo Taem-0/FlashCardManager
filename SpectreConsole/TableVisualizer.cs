@@ -43,6 +43,18 @@ namespace FlashCardManager.SpectreConsole
             AnsiConsole.Write(table);
         }
 
+        internal static void flashCardFront(FlashcardDTO tableData)
+        {
+            var table = new Table();
+            table.AddColumn("Front Side");
+            table.AddRow(tableData.frontDTO ?? string.Empty);
+            table.ShowRowSeparators();
+            AnsiConsole.Write(table);
+            AnsiConsole.MarkupLine("-----------------------------------------");
+
+
+        }
+
     }
 
 

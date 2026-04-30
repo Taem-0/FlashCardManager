@@ -99,7 +99,7 @@ namespace FlashCardManager.Services
                 AnsiConsole.MarkupLine("[red]No stacks found :<.[/]");
                 UserInputMethods.Pause();
                 return Stacks.EmptyStack;
-
+                 
             }
 
 
