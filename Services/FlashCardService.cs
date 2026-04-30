@@ -24,8 +24,6 @@ namespace FlashCardManager.Services
             while(isInFlashCardStackSelection)
             {
                 isInFlashCardStackSelection = FlashCardMenu(StackService.SelectStackMenu());
-
-
             }
         }
 
